@@ -20,18 +20,37 @@ public class Reservation {
     private double reservationPrice;
     private String workstage;
     //   workStage (In Process, Finish, Canceled)
+    private static int counter = 1;
 
-    public Reservation(String reservationId, Customer customer, Employee employee, List<Service> services,
-            String workstage) {
-        this.reservationId = reservationId;
+    public Reservation(Customer customer, Employee employee, List<Service> services,
+                       String workstage) {
+        this.reservationId = generateReservId(counter);
         this.customer = customer;
         this.employee = employee;
         this.services = services;
         this.reservationPrice = calculateReservationPrice();
         this.workstage = workstage;
+        counter++;
     };
 
     private double calculateReservationPrice(){
-        return 0;
+        double totalServicePrice = 0;
+
+        for (Service service : services) {
+            totalServicePrice += service.getPrice();
+        }
+
+        if (customer.getMember().getMembershipName().equalsIgnoreCase("Silver")) {
+            return totalServicePrice - (totalServicePrice * 0.05);
+        } else if (customer.getMember().getMembershipName().equalsIgnoreCase("Gold")) {
+            return totalServicePrice - (totalServicePrice * 0.1);
+        } else {
+            return totalServicePrice;
+        }
     }
+    public String generateReservId(int counter){
+        String reservIDFormatted = String.format("Rsv-%02d", counter);
+        return reservIDFormatted;
+    }
+
 }
